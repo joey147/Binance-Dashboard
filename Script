@@ -1,0 +1,54 @@
+<script>
+        // Define the Binance API URLs
+        const BASE_URL = 'https://api.binance.com/api/v3/';
+        const EXCHANGE_INFO_URL = `${BASE_URL}exchangeInfo`;
+        const TICKER_24HR_URL = `${BASE_URL}ticker/24hr`;
+
+        // Get the search box and dashboard elements
+        const searchBox = document.getElementById('search-box');
+        const symbolElem = document.getElementById('symbol');
+        const priceElem = document.getElementById('price');
+        const highPriceElem = document.getElementById('highPrice');
+        const lowPriceElem = document.getElementById('lowPrice');
+        const volumeElem = document.getElementById('volume');
+
+        // Fetch symbols from Binance API
+        async function fetchSymbols() {
+            const response = await fetch(EXCHANGE_INFO_URL);
+            const data = await response.json();
+            return data.symbols.map(symbol => symbol.symbol);
+        }
+
+        // Fetch ticker data from Binance API
+        async function fetchTicker(symbol) {
+            const response = await fetch(`${TICKER_24HR_URL}?symbol=${symbol}`);
+            const data = await response.json();
+            return data;
+        }
+
+        // Populate the dashboard with symbol data
+        async function updateDashboard(symbol) {
+            if (!symbol) return;
+
+            const tickerData = await fetchTicker(symbol);
+
+            symbolElem.textContent = tickerData.symbol;
+            priceElem.textContent = `${tickerData.lastPrice} ${tickerData.symbol.replace(/^[A-Z]+/, '')}`;
+            highPriceElem.textContent = `${tickerData.highPrice} ${tickerData.symbol.replace(/^[A-Z]+/, '')}`;
+            lowPriceElem.textContent = `${tickerData.lowPrice} ${tickerData.symbol.replace(/^[A-Z]+/, '')}`;
+            volumeElem.textContent = `${tickerData.volume} ${tickerData.symbol.replace(/^[A-Z]+/, '')}`;
+        }
+
+        // Handle search box input
+        searchBox.addEventListener('input', async (event) => {
+            const query = event.target.value.toUpperCase();
+            const symbols = await fetchSymbols();
+
+            if (symbols.includes(query)) {
+                updateDashboard(query);
+            }
+        });
+
+        // Initial fetch to populate symbol list
+        fetchSymbols();
+    </script>
