@@ -1,0 +1,85 @@
+import { useState, useEffect } from 'react';
+
+interface SymbolInfo {
+  symbol: string;
+  lastPrice: string;
+  highPrice: string;
+  lowPrice: string;
+  volume: string;
+}
+
+const fetchSymbols = async (): Promise<string[]> => {
+  const response = await fetch('https://api.binance.com/api/v3/exchangeInfo');
+  const data = await response.json();
+  return data.symbols.map((symbol: any) => symbol.symbol);
+};
+
+const fetchTicker = async (symbol: string): Promise<SymbolInfo> => {
+  const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+  const data = await response.json();
+  return {
+    symbol: data.symbol,
+    lastPrice: data.lastPrice,
+    highPrice: data.highPrice,
+    lowPrice: data.lowPrice,
+    volume: data.volume,
+  };
+};
+
+const SymbolDashboard: React.FC = () => {
+  const [symbols, setSymbols] = useState<string[]>([]);
+  const [selectedSymbol, setSelectedSymbol] = useState<string>('');
+  const [symbolInfo, setSymbolInfo] = useState<SymbolInfo | null>(null);
+
+  useEffect(() => {
+    const loadSymbols = async () => {
+      const symbols = await fetchSymbols();
+      setSymbols(symbols);
+    };
+    loadSymbols();
+  }, []);
+
+  useEffect(() => {
+    if (selectedSymbol) {
+      const loadTicker = async () => {
+        const info = await fetchTicker(selectedSymbol);
+        setSymbolInfo(info);
+      };
+      loadTicker();
+    }
+  }, [selectedSymbol]);
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <input
+        type="text"
+        placeholder="Search for a symbol..."
+        className="w-full p-2 border border-gray-300 rounded-md mb-4"
+        onChange={(e) => {
+          const query = e.target.value.toUpperCase();
+          if (symbols.includes(query)) {
+            setSelectedSymbol(query);
+          } else {
+            setSelectedSymbol('');
+            setSymbolInfo(null);
+          }
+        }}
+      />
+      {symbolInfo ? (
+        <div>
+          <h2 className="text-2xl font-bold mb-4">{symbolInfo.symbol}</h2>
+          <div className="space-y-2">
+            <div><strong>Price:</strong> {symbolInfo.lastPrice}</div>
+            <div><strong>24h High:</strong> {symbolInfo.highPrice}</div>
+            <div><strong>24h Low:</strong> {symbolInfo.lowPrice}</div>
+            <div><strong>24h Volume:</strong> {symbolInfo.volume}</div>
+          </div>
+        </div>
+      ) : (
+        <p className="text-gray-500">Select a symbol to view details.</p>
+      )}
+    </div>
+  );
+};
+
+export default SymbolDashboard;
