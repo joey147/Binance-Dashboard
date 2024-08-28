@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binance Symbol Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        #container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #search-box {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        #dashboard {
+            font-size: 16px;
+        }
+        .dashboard-item {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <input type="text" id="search-box" placeholder="Search for a symbol...">
+        <div id="dashboard">
+            <div class="dashboard-item"><strong>Symbol:</strong> <span id="symbol"></span></div>
+            <div class="dashboard-item"><strong>Price:</strong> <span id="price"></span></div>
+            <div class="dashboard-item"><strong>24h High:</strong> <span id="highPrice"></span></div>
+            <div class="dashboard-item"><strong>24h Low:</strong> <span id="lowPrice"></span></div>
+            <div class="dashboard-item"><strong>24h Volume:</strong> <span id="volume"></span></div>
+        </div>
+    </div>
+
+
+</body>
+</html>
